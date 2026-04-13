@@ -2,31 +2,26 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import css from "./SignUp.module.css";
 import { register } from "@/lib/api/clientApi";
-import { useAuthStore } from "@/lib/store/authStore"; 
-import css from "../auth.module.css";
 
 export default function SignUpPage() {
   const router = useRouter();
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const setUser = useAuthStore((s) => s.setUser); 
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setError(""); 
-
-    const form = e.currentTarget;
-    const email = (form.elements.namedItem("email") as HTMLInputElement).value;
-    const password = (form.elements.namedItem("password") as HTMLInputElement).value;
+    setError("");
 
     try {
-     
-      const user = await register({ email, password });
-      
-      setUser(user); 
+      await register({ email, password });
+
       router.push("/profile");
     } catch {
-      setError("Registration error");
+      setError("Registration failed");
     }
   };
 
@@ -35,10 +30,37 @@ export default function SignUpPage() {
       <h1 className={css.formTitle}>Sign up</h1>
 
       <form className={css.form} onSubmit={handleSubmit}>
-        <input name="email" type="email" placeholder="Email" required />
-        <input name="password" type="password" placeholder="Password" required />
+        <div className={css.formGroup}>
+          <label htmlFor="email">Email</label>
+          <input
+            id="email"
+            type="email"
+            name="email"
+            className={css.input}
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+        </div>
 
-        <button type="submit">Register</button>
+        <div className={css.formGroup}>
+          <label htmlFor="password">Password</label>
+          <input
+            id="password"
+            type="password"
+            name="password"
+            className={css.input}
+            required
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        </div>
+
+        <div className={css.actions}>
+          <button type="submit" className={css.submitButton}>
+            Register
+          </button>
+        </div>
 
         {error && <p className={css.error}>{error}</p>}
       </form>

@@ -1,24 +1,31 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-export function proxy(request: NextRequest) {
-  const token = request.cookies.get("token");
+export function proxy(req: NextRequest) {
+  const token = req.cookies.get("token")?.value;
+  const { pathname } = req.nextUrl;
 
   const isAuthPage =
-    request.nextUrl.pathname.startsWith("/sign-in") ||
-    request.nextUrl.pathname.startsWith("/sign-up");
+    pathname.startsWith("/sign-in") ||
+    pathname.startsWith("/sign-up");
 
-  const isPrivate =
-    request.nextUrl.pathname.startsWith("/profile") ||
-    request.nextUrl.pathname.startsWith("/notes");
+  const isPrivatePage =
+    pathname.startsWith("/profile") ||
+    pathname.startsWith("/notes");
 
-  if (!token && isPrivate) {
-    return NextResponse.redirect(new URL("/sign-in", request.url));
+  if (!token && isPrivatePage) {
+    return NextResponse.redirect(new URL("/sign-in", req.url));
   }
 
+
   if (token && isAuthPage) {
-    return NextResponse.redirect(new URL("/profile", request.url));
+    return NextResponse.redirect(new URL("/profile", req.url));
   }
 
   return NextResponse.next();
 }
+
+
+export const config = {
+  matcher: ["/profile/:path*", "/notes/:path*", "/sign-in", "/sign-up"],
+};

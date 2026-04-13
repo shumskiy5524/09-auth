@@ -1,35 +1,47 @@
 import { api } from "./api";
-import { User } from "@/types/users/user";
+import type { Note, NewNote } from "@/types/note";
+import type { User } from "@/types/users/user";
 
-export const register = async (data: { email: string; password: string }) => {
-  const res = await api.post("/auth/register", data);
-  return res.data;
-};
 
-export const login = async (data: { email: string; password: string }) => {
-  const res = await api.post("/auth/login", data);
-  return res.data;
-};
 
-export const logout = async () => {
-  await api.post("/auth/logout");
-};
+export const register = (data: { email: string; password: string }) =>
+  api.post<User>("/auth/register", data).then((res) => res.data);
 
-export const checkSession = async (): Promise<User | null> => {
-  try {
-    const res = await api.get("/auth/session");
-    return res.data || null;
-  } catch {
-    return null;
-  }
-};
+export const login = (data: { email: string; password: string }) =>
+  api.post<User>("/auth/login", data).then((res) => res.data);
 
-export const getMe = async (): Promise<User> => {
-  const res = await api.get("/users/me");
-  return res.data;
-};
+export const logout = () =>
+  api.post("/auth/logout").then((res) => res.data);
 
-export const updateMe = async (data: { username: string }) => {
-  const res = await api.patch("/users/me", data);
-  return res.data;
-};
+export const checkSession = () =>
+  api.get<User>("/auth/session").then((res) => res.data);
+
+
+
+export const getMe = () =>
+  api.get<User>("/users/me").then((res) => res.data);
+
+export const updateMe = (data: {
+  email?: string;
+  username?: string;
+  avatar?: string;
+}) => api.patch<User>("/users/me", data).then((res) => res.data);
+
+
+
+export const fetchNotes = (params?: {
+  search?: string;
+  page?: number;
+  perPage?: number;
+  tag?: string;
+}) =>
+  api.get<Note[]>("/notes", { params }).then((res) => res.data);
+
+export const fetchNoteById = (id: string) =>
+  api.get<Note>(`/notes/${id}`).then((res) => res.data);
+
+export const createNote = (data: NewNote) =>
+  api.post<Note>("/notes", data).then((res) => res.data);
+
+export const deleteNote = (id: string) =>
+  api.delete<Note>(`/notes/${id}`).then((res) => res.data);
