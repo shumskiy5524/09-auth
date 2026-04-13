@@ -4,8 +4,6 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 
-import css from "./EditProfile.module.css";
-
 import { getMe, updateMe } from "@/lib/api/clientApi";
 
 export default function EditProfilePage() {
@@ -38,7 +36,6 @@ export default function EditProfilePage() {
 
     try {
       await updateMe({ username });
-
       router.push("/profile");
     } catch (err) {
       console.error(err);
@@ -52,25 +49,23 @@ export default function EditProfilePage() {
   if (loading) return <p>Loading...</p>;
 
   return (
-    <main className={css.mainContent}>
-      <div className={css.profileCard}>
-        <h1 className={css.formTitle}>Edit Profile</h1>
+    <main>
+      <div>
+        <h1>Edit Profile</h1>
 
         <Image
           src={avatar}
           alt="User Avatar"
           width={120}
           height={120}
-          className={css.avatar}
         />
 
-        <form className={css.profileInfo} onSubmit={handleSubmit}>
-          <div className={css.usernameWrapper}>
+        <form onSubmit={handleSubmit}>
+          <div>
             <label htmlFor="username">Username:</label>
             <input
               id="username"
               type="text"
-              className={css.input}
               value={username}
               onChange={(e) => setUsername(e.target.value)}
             />
@@ -78,19 +73,11 @@ export default function EditProfilePage() {
 
           <p>Email: {email}</p>
 
-          <div className={css.actions}>
-            <button type="submit" className={css.saveButton}>
-              Save
-            </button>
+          <button type="submit">Save</button>
 
-            <button
-              type="button"
-              className={css.cancelButton}
-              onClick={handleCancel}
-            >
-              Cancel
-            </button>
-          </div>
+          <button type="button" onClick={handleCancel}>
+            Cancel
+          </button>
         </form>
       </div>
     </main>
