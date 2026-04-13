@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { register } from "@/lib/api/clientApi";
-import css from "./page.module.css";
+import css from "../auth.module.css";
 
 export default function SignUpPage() {
   const router = useRouter();
