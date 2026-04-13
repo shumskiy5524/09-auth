@@ -1,39 +1,46 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useAuthStore } from "@/lib/store/authStore";
-import { login } from "@/lib/api/clientApi";
+import { register } from "@/lib/api/clientApi";
+import { useAuthStore } from "@/lib/store/authStore"; 
 import css from "../auth.module.css";
 
-export default function SignInPage() {
+export default function SignUpPage() {
   const router = useRouter();
-  const setUser = useAuthStore((s) => s.setUser);
+  const [error, setError] = useState("");
+  const setUser = useAuthStore((s) => s.setUser); 
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setError(""); 
 
     const form = e.currentTarget;
     const email = (form.elements.namedItem("email") as HTMLInputElement).value;
     const password = (form.elements.namedItem("password") as HTMLInputElement).value;
 
     try {
-      const user = await login({ email, password });
-      setUser(user);
+     
+      const user = await register({ email, password });
+      
+      setUser(user); 
       router.push("/profile");
     } catch {
-      console.log("Login error");
+      setError("Registration error");
     }
   };
 
   return (
     <main className={css.mainContent}>
+      <h1 className={css.formTitle}>Sign up</h1>
+
       <form className={css.form} onSubmit={handleSubmit}>
-        <h1>Sign in</h1>
+        <input name="email" type="email" placeholder="Email" required />
+        <input name="password" type="password" placeholder="Password" required />
 
-        <input name="email" />
-        <input name="password" type="password" />
+        <button type="submit">Register</button>
 
-        <button type="submit">Log in</button>
+        {error && <p className={css.error}>{error}</p>}
       </form>
     </main>
   );
