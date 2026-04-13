@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/lib/store/authStore";
 import { login } from "@/lib/api/clientApi";
-import css from "./page.module.css";
+import css from "../auth.module.css";
 
 export default function SignInPage() {
   const router = useRouter();
