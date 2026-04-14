@@ -1,21 +1,17 @@
-import { api } from "../../api";
+import { NextRequest, NextResponse } from 'next/server';
 
-export async function GET(
-  req: Request,
-  { params }: { params: { id: string } }
-) {
-  const { id } = params;
 
-  const { data } = await api.get(`/notes/${id}`);
-  return Response.json(data);
+type Props = {
+  params: Promise<{ id: string }>
 }
 
-export async function DELETE(
-  req: Request,
-  { params }: { params: { id: string } }
+export async function GET(
+  request: NextRequest,
+  context: Props 
 ) {
-  const { id } = params;
 
-  const { data } = await api.delete(`/notes/${id}`);
-  return Response.json(data);
+  const { id } = await context.params;
+
+ 
+  return NextResponse.json({ message: `Note ${id} found` });
 }
