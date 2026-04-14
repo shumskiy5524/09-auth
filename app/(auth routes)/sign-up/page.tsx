@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import css from "./SignUp.module.css";
 import { register } from "@/lib/api/clientApi";
 
 export default function SignUpPage() {
@@ -18,7 +17,6 @@ export default function SignUpPage() {
 
     try {
       await register({ email, password });
-
       router.push("/profile");
     } catch {
       setError("Registration failed");
@@ -26,43 +24,43 @@ export default function SignUpPage() {
   };
 
   return (
-    <main className={css.mainContent}>
-      <h1 className={css.formTitle}>Sign up</h1>
+    <main className="mainContent">
+      <h1 className="formTitle">Sign up</h1>
 
-      <form className={css.form} onSubmit={handleSubmit}>
-        <div className={css.formGroup}>
+      <form className="form" onSubmit={handleSubmit}>
+        <div className="formGroup">
           <label htmlFor="email">Email</label>
           <input
             id="email"
             type="email"
             name="email"
-            className={css.input}
+            className="input"
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
         </div>
 
-        <div className={css.formGroup}>
+        <div className="formGroup">
           <label htmlFor="password">Password</label>
           <input
             id="password"
             type="password"
             name="password"
-            className={css.input}
+            className="input"
             required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
         </div>
 
-        <div className={css.actions}>
-          <button type="submit" className={css.submitButton}>
+        <div className="actions">
+          <button type="submit" className="submitButton">
             Register
           </button>
         </div>
 
-        {error && <p className={css.error}>{error}</p>}
+        {error && <p className="error">{error}</p>}
       </form>
     </main>
   );
