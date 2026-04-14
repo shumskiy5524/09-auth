@@ -1,6 +1,6 @@
 import { api } from "./api";
 import type { Note, NewNote } from "@/types/note";
-import type { User } from "@/types/users/user";
+import type { User } from "@/types/user";
 
 
 
