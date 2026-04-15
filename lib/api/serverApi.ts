@@ -1,28 +1,7 @@
+import { api } from "./api";
 import { cookies } from "next/headers";
-
-const baseURL = process.env.NEXT_PUBLIC_API_URL + "/api";
-
-async function serverFetch<T>(
-  endpoint: string,
-  options: RequestInit = {}
-): Promise<T> {
-  const cookieStore = await cookies();
-
-  const res = await fetch(`${baseURL}${endpoint}`, {
-    ...options,
-    headers: {
-      Cookie: cookieStore.toString(),
-      "Content-Type": "application/json",
-      ...options.headers,
-    },
-  });
-
-  if (!res.ok) {
-    throw new Error(`Failed to fetch ${endpoint}: ${res.statusText}`);
-  }
-
-  return res.json();
-}
+import type { Note } from "@/types/note";
+import type { User } from "@/types/user";
 
 type NotesQuery = {
   search?: string;
@@ -31,33 +10,51 @@ type NotesQuery = {
   tag?: string;
 };
 
-function buildQuery(params?: NotesQuery) {
-  if (!params) return "";
+export async function checkSession(): Promise<User> {
+  const cookieStore = cookies();
 
-  const filtered = Object.fromEntries(
-    Object.entries(params)
-      .filter(([, value]) => value !== undefined)
-      .map(([key, value]) => [key, String(value)])
-  );
+  const res = await api.get("/auth/session", {
+    headers: {
+      Cookie: cookieStore.toString(),
+    },
+  });
 
-  const queryString = new URLSearchParams(filtered).toString();
-
-  return queryString ? `?${queryString}` : "";
+  return res.data;
 }
 
-export async function checkSession() {
-  return serverFetch("/auth/session");
+export async function getMe(): Promise<User> {
+  const cookieStore = cookies();
+
+  const res = await api.get("/users/me", {
+    headers: {
+      Cookie: cookieStore.toString(),
+    },
+  });
+
+  return res.data;
 }
 
-export async function getMe() {
-  return serverFetch("/users/me");
+export async function fetchNotes(params?: NotesQuery): Promise<Note[]> {
+  const cookieStore = cookies();
+
+  const res = await api.get("/notes", {
+    params,
+    headers: {
+      Cookie: cookieStore.toString(),
+    },
+  });
+
+  return res.data;
 }
 
-export async function fetchNotes(params?: NotesQuery) {
-  const query = buildQuery(params);
-  return serverFetch(`/notes${query}`);
-}
+export async function fetchNoteById(id: string): Promise<Note> {
+  const cookieStore = cookies();
 
-export async function fetchNoteById(id: string) {
-  return serverFetch(`/notes/${id}`);
+  const res = await api.get(`/notes/${id}`, {
+    headers: {
+      Cookie: cookieStore.toString(),
+    },
+  });
+
+  return res.data;
 }

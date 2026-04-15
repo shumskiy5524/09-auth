@@ -2,8 +2,8 @@ import { NextResponse } from "next/server";
 
 export async function GET() {
   return NextResponse.json({
-    user: {
-      email: "test@example.com",
-    },
+    email: "test@test.com",
+    username: "User",
+    avatar: "https://ac.goit.global/avatar.jpg",
   });
 }

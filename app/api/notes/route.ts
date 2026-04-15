@@ -1,15 +1,25 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function GET() {
+type Props = {
+  params: { id: string };
+};
+
+export async function GET(
+  req: NextRequest,
+  { params }: Props
+) {
   return NextResponse.json({
-    id: 1,
+    id: params.id,
     title: "Note",
     text: "Hello",
   });
 }
 
-export async function DELETE() {
+export async function DELETE(
+  req: NextRequest,
+  { params }: Props
+) {
   return NextResponse.json({
-    message: "Deleted",
+    message: `Deleted note ${params.id}`,
   });
 }

@@ -1,83 +1,62 @@
+import { api } from "./api";
 import type { Note, NewNote } from "@/types/note";
 import type { User } from "@/types/user";
 
-async function handleRequest<T>(url: string, options?: RequestInit): Promise<T> {
-  const response = await fetch(url, {
-    ...options,
-    headers: {
-      "Content-Type": "application/json",
-      ...options?.headers,
-    },
-  });
 
-  if (!response.ok) {
-    throw new Error(`Error: ${response.statusText}`);
-  }
+export const register = async (data: { email: string; password: string }) => {
+  const res = await api.post<User>("/auth/register", data);
+  return res.data;
+};
 
-  return response.json();
-}
+export const login = async (data: { email: string; password: string }) => {
+  const res = await api.post<User>("/auth/login", data);
+  return res.data;
+};
 
-export const register = (data: { email: string; password: string }) =>
-  handleRequest<User>("/api/auth/register", {
-    method: "POST",
-    body: JSON.stringify(data),
-  });
+export const logout = async () => {
+  await api.post("/auth/logout");
+};
 
-export const login = (data: { email: string; password: string }) =>
-  handleRequest<User>("/api/auth/login", {
-    method: "POST",
-    body: JSON.stringify(data),
-  });
+export const checkSession = async () => {
+  const res = await api.get<User>("/auth/session");
+  return res.data;
+};
 
-export const logout = () =>
-  handleRequest<void>("/api/auth/logout", { method: "POST" });
 
-export const checkSession = () =>
-  handleRequest<User>("/api/auth/session");
+export const getMe = async () => {
+  const res = await api.get<User>("/users/me");
+  return res.data;
+};
 
-export const getMe = () =>
-  handleRequest<User>("/api/users/me");
-
-export const updateMe = (data: {
-  email?: string;
+export const updateMe = async (data: {
   username?: string;
-  avatar?: string;
-}) =>
-  handleRequest<User>("/api/users/me", {
-    method: "PATCH",
-    body: JSON.stringify(data),
-  });
+}) => {
+  const res = await api.patch<User>("/users/me", data);
+  return res.data;
+};
 
-export const fetchNotes = (params?: {
+
+export const fetchNotes = async (params?: {
   search?: string;
   page?: number;
   perPage?: number;
   tag?: string;
 }) => {
-  const query = params
-    ? `?${new URLSearchParams(
-        Object.entries(params)
-          .filter(([, value]) => value !== undefined)
-          .reduce((acc, [key, value]) => {
-            acc[key] = String(value);
-            return acc;
-          }, {} as Record<string, string>)
-      )}`
-    : "";
-
-  return handleRequest<Note[]>(`/api/notes${query}`);
+  const res = await api.get<Note[]>("/notes", { params });
+  return res.data;
 };
 
-export const fetchNoteById = (id: string) =>
-  handleRequest<Note>(`/api/notes/${id}`);
+export const fetchNoteById = async (id: string) => {
+  const res = await api.get<Note>(`/notes/${id}`);
+  return res.data;
+};
 
-export const createNote = (data: NewNote) =>
-  handleRequest<Note>("/api/notes", {
-    method: "POST",
-    body: JSON.stringify(data),
-  });
+export const createNote = async (data: NewNote) => {
+  const res = await api.post<Note>("/notes", data);
+  return res.data;
+};
 
-export const deleteNote = (id: string) =>
-  handleRequest<Note>(`/api/notes/${id}`, {
-    method: "DELETE",
-  });
+export const deleteNote = async (id: string) => {
+  const res = await api.delete<Note>(`/notes/${id}`);
+  return res.data;
+};

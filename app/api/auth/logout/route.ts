@@ -1,7 +1,3 @@
-import { NextResponse } from "next/server";
-
 export async function POST() {
-  return NextResponse.json({
-    message: "Logged out",
-  });
+  return Response.json({ message: 'Logged out' });
 }

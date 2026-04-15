@@ -6,27 +6,36 @@ import { logout } from "@/lib/api/clientApi";
 import { useRouter } from "next/navigation";
 
 export default function AuthNavigation() {
-  const { isAuthenticated, clearAuth } = useAuthStore();
+  const { isAuthenticated, user, clearIsAuthenticated } = useAuthStore();
   const router = useRouter();
 
   const handleLogout = async () => {
     await logout();
-    clearAuth();
+    clearIsAuthenticated();
     router.push("/sign-in");
   };
 
   if (!isAuthenticated) {
     return (
       <>
-        <Link href="/sign-in">Login</Link>
-        <Link href="/sign-up">Sign up</Link>
+        <Link href="/sign-in" prefetch={false}>
+          Login
+        </Link>
+        <Link href="/sign-up" prefetch={false}>
+          Sign up
+        </Link>
       </>
     );
   }
 
   return (
     <>
-      <Link href="/profile">Profile</Link>
+      <Link href="/profile" prefetch={false}>
+        Profile
+      </Link>
+
+      <p>{user?.email}</p>
+
       <button onClick={handleLogout}>Logout</button>
     </>
   );

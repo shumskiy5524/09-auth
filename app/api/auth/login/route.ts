@@ -1,13 +1,4 @@
-import { NextResponse } from "next/server";
-
-export async function POST(req: Request) {
-  const body = await req.json();
-
- 
-  return NextResponse.json({
-    user: {
-      email: body.email,
-    },
-    token: "fake-token",
-  });
+export async function POST(request: Request) {
+  const body = await request.json();
+  return Response.json({ user: body });
 }

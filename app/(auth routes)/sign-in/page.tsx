@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react"; 
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/lib/store/authStore";
 import { login } from "@/lib/api/clientApi";
@@ -21,12 +21,13 @@ export default function SignInPage() {
 
     try {
       const user = await login({ email, password });
+
       setUser(user);
       router.push("/profile");
-   } catch (err) {
-  setError("Invalid email or password");
-  console.log("Login error:", err); 
-}
+    } catch (err) {
+      setError("Invalid email or password");
+      console.log("Login error:", err);
+    }
   };
 
   return (
@@ -34,11 +35,34 @@ export default function SignInPage() {
       <form className={css.form} onSubmit={handleSubmit}>
         <h1 className={css.formTitle}>Sign in</h1>
 
-        <input name="email" type="email" placeholder="Email" required />
-        <input name="password" type="password" placeholder="Password" required />
+        <div className={css.formGroup}>
+          <label htmlFor="email">Email</label>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            className={css.input}
+            required
+          />
+        </div>
 
-        <button type="submit">Log in</button>
-        
+        <div className={css.formGroup}>
+          <label htmlFor="password">Password</label>
+          <input
+            id="password"
+            name="password"
+            type="password"
+            className={css.input}
+            required
+          />
+        </div>
+
+        <div className={css.actions}>
+          <button type="submit" className={css.submitButton}>
+            Log in
+          </button>
+        </div>
+
         {error && <p className={css.error}>{error}</p>}
       </form>
     </main>

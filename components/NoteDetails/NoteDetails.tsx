@@ -2,9 +2,10 @@
 
 import { useRouter } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
+
 import Modal from '@/components/Modal/Modal';
-import { fetchNoteById } from '@/lib/api';
-import { Note } from '@/types/note';
+import { fetchNoteById } from '@/lib/api/clientApi';
+import type { Note } from '@/types/note';
 
 interface NotePreviewProps {
   noteId: string;
@@ -40,7 +41,10 @@ export default function NotePreview({ noteId }: NotePreviewProps) {
       <h2>{note.title}</h2>
       <p>{note.content}</p>
       <p><strong>Tag:</strong> {note.tag}</p>
-      <p><strong>Created At:</strong> {new Date(note.createdAt).toLocaleString()}</p>
+      <p>
+        <strong>Created At:</strong>{" "}
+        {new Date(note.createdAt).toLocaleString()}
+      </p>
 
       <button onClick={() => router.back()}>Close</button>
     </Modal>
