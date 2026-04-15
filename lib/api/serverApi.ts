@@ -1,7 +1,8 @@
-import { api } from "./api";
 import { cookies } from "next/headers";
 import type { Note } from "@/types/note";
 import type { User } from "@/types/user";
+
+const baseURL = process.env.NEXT_PUBLIC_API_URL + "/api";
 
 type NotesQuery = {
   search?: string;
@@ -10,51 +11,50 @@ type NotesQuery = {
   tag?: string;
 };
 
-export async function checkSession(): Promise<User> {
-  const cookieStore = cookies();
+async function serverFetch<T>(url: string, options: RequestInit = {}): Promise<T> {
+  const cookieStore = await cookies();
 
-  const res = await api.get("/auth/session", {
+  const res = await fetch(`${baseURL}${url}`, {
+    ...options,
     headers: {
       Cookie: cookieStore.toString(),
+      "Content-Type": "application/json",
+      ...options.headers,
     },
   });
 
-  return res.data;
+  if (!res.ok) {
+    throw new Error(`Request failed: ${res.status}`);
+  }
+
+  return res.json();
+}
+
+
+
+export async function checkSession(): Promise<User> {
+  return serverFetch<User>("/auth/session");
 }
 
 export async function getMe(): Promise<User> {
-  const cookieStore = cookies();
-
-  const res = await api.get("/users/me", {
-    headers: {
-      Cookie: cookieStore.toString(),
-    },
-  });
-
-  return res.data;
+  return serverFetch<User>("/users/me");
 }
 
+
+
 export async function fetchNotes(params?: NotesQuery): Promise<Note[]> {
-  const cookieStore = cookies();
+  const query = params
+    ? "?" + new URLSearchParams(
+        Object.entries(params).reduce((acc, [k, v]) => {
+          if (v !== undefined) acc[k] = String(v);
+          return acc;
+        }, {} as Record<string, string>)
+      ).toString()
+    : "";
 
-  const res = await api.get("/notes", {
-    params,
-    headers: {
-      Cookie: cookieStore.toString(),
-    },
-  });
-
-  return res.data;
+  return serverFetch<Note[]>(`/notes${query}`);
 }
 
 export async function fetchNoteById(id: string): Promise<Note> {
-  const cookieStore = cookies();
-
-  const res = await api.get(`/notes/${id}`, {
-    headers: {
-      Cookie: cookieStore.toString(),
-    },
-  });
-
-  return res.data;
+  return serverFetch<Note>(`/notes/${id}`);
 }
