@@ -10,39 +10,48 @@ type NotesQuery = {
   tag?: string;
 };
 
-const getCookieHeader = () => {
-  return cookies().toString();
-};
+const getCookieHeader = () => cookies().toString();
 
-export const checkSession = async () => {
-  return api.get<User>("/auth/session", {
+
+export const checkSession = async (): Promise<User> => {
+  const { data } = await api.get<User>("/auth/session", {
     headers: {
       Cookie: getCookieHeader(),
     },
   });
+
+  return data;
 };
 
-export const getMe = async () => {
-  return api.get<User>("/users/me", {
+
+export const getMe = async (): Promise<User> => {
+  const { data } = await api.get<User>("/users/me", {
     headers: {
       Cookie: getCookieHeader(),
     },
   });
+
+  return data;
 };
 
-export const fetchNotes = async (params?: NotesQuery) => {
-  return api.get<Note[]>("/notes", {
+
+export const fetchNotes = async (params?: NotesQuery): Promise<Note[]> => {
+  const { data } = await api.get<Note[]>("/notes", {
     params,
     headers: {
       Cookie: getCookieHeader(),
     },
   });
+
+  return data;
 };
 
-export const fetchNoteById = async (id: string) => {
-  return api.get<Note>(`/notes/${id}`, {
+export const fetchNoteById = async (id: string): Promise<Note> => {
+  const { data } = await api.get<Note>(`/notes/${id}`, {
     headers: {
       Cookie: getCookieHeader(),
     },
   });
+
+  return data;
 };

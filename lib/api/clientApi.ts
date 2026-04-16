@@ -2,14 +2,15 @@ import { api } from "./api";
 import type { Note, NewNote } from "@/types/note";
 import type { User } from "@/types/user";
 
-export const register = async (data: { email: string; password: string }) => {
-  const { data: res } = await api.post<User>("/auth/register", data);
-  return res;
+
+export const register = async (payload: { email: string; password: string }) => {
+  const { data } = await api.post<User>("/auth/register", payload);
+  return data;
 };
 
-export const login = async (data: { email: string; password: string }) => {
-  const { data: res } = await api.post<User>("/auth/login", data);
-  return res;
+export const login = async (payload: { email: string; password: string }) => {
+  const { data } = await api.post<User>("/auth/login", payload);
+  return data;
 };
 
 export const logout = async () => {
@@ -21,15 +22,17 @@ export const checkSession = async () => {
   return data;
 };
 
+
 export const getMe = async () => {
   const { data } = await api.get<User>("/users/me");
   return data;
 };
 
-export const updateMe = async (data: { username?: string }) => {
-  const { data: res } = await api.patch<User>("/users/me", data);
-  return res;
+export const updateMe = async (payload: { username?: string }) => {
+  const { data } = await api.patch<User>("/users/me", payload);
+  return data;
 };
+
 
 export const fetchNotes = async (params?: {
   search?: string;
@@ -46,8 +49,8 @@ export const fetchNoteById = async (id: string) => {
   return data;
 };
 
-export const createNote = async (data: NewNote) => {
-  const { data: res } = await api.post<Note>("/notes", data);
+export const createNote = async (payload: NewNote) => {
+  const { data: res } = await api.post<Note>("/notes", payload);
   return res;
 };
 
