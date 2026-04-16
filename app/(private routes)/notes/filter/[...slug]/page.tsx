@@ -1,14 +1,8 @@
 import type { Metadata } from "next";
-
+import { fetchNotes } from "@/lib/api/serverApi";
+import type { Note } from "@/types/note";
 interface Props {
   params: { slug: string[] };
-}
-
-
-interface Note {
-  id: string;
-  title: string;
-  content?: string;
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -30,28 +24,23 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-
 export default async function Page({ params }: Props) {
   const tag = params.slug?.[0] || "all";
 
-  
-  const mockNotes: Note[] = [
-    { id: "1", title: "Learn React", content: "Study hooks and components" },
-    { id: "2", title: "Next.js Tips", content: "Server vs Client components" },
-    { id: "3", title: "TypeScript", content: "Strong typing for safety" },
-  ];
+  const res = await fetchNotes({
+    tag: tag === "all" ? "" : tag,
+  });
 
- 
-  const notes = tag === "all" ? mockNotes : mockNotes.filter(n => n.title.toLowerCase().includes(tag.toLowerCase()));
-
+  const notes = res.data; 
   return (
     <div>
       <h1>Notes filtered by: {tag}</h1>
+
       {notes.length === 0 ? (
         <p>No notes found for this tag.</p>
       ) : (
         <ul>
-          {notes.map(note => (
+          {notes.map((note: Note) => (
             <li key={note.id}>
               <strong>{note.title}</strong>
               {note.content && <p>{note.content}</p>}

@@ -1,38 +1,26 @@
-import type { Metadata } from "next";
-import { fetchNoteById } from "@/lib/api/serverApi";
+"use client";
+
+import { useQuery } from "@tanstack/react-query";
+import type { Note } from "@/types/note";
+import { fetchNoteById } from "@/lib/api/clientApi";
 
 interface Props {
-  params: { id: string }; 
+  id: string;
 }
 
+export default function NoteClient({ id }: Props) {
+  const { data, isLoading, isError } = useQuery<Note>({
+    queryKey: ["note", id],
+    queryFn: () => fetchNoteById(id),
+  });
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const note = await fetchNoteById(params.id);
-
-  return {
-    title: note.title,
-    description: note.content || "",
-    openGraph: {
-      title: note.title,
-      description: note.content || "",
-      url: `https://notehub.app/notes/${params.id}`,
-      images: [
-        {
-          url: "https://ac.goit.global/fullstack/react/notehub-og-meta.jpg",
-        },
-      ],
-    },
-  };
-}
-
-
-export default async function Page({ params }: Props) {
-  const note = await fetchNoteById(params.id);
+  if (isLoading) return <p>Loading...</p>;
+  if (isError || !data) return <p>Error</p>;
 
   return (
     <div>
-      <h1>{note.title}</h1>
-      <p>{note.content}</p>
+      <h1>{data.title}</h1>
+      <p>{data.content}</p>
     </div>
   );
 }

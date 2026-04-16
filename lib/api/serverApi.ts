@@ -1,8 +1,7 @@
 import { cookies } from "next/headers";
+import { api } from "./api";
 import type { Note } from "@/types/note";
 import type { User } from "@/types/user";
-
-const baseURL = process.env.NEXT_PUBLIC_API_URL + "/api";
 
 type NotesQuery = {
   search?: string;
@@ -11,51 +10,39 @@ type NotesQuery = {
   tag?: string;
 };
 
-async function serverFetch<T>(url: string, options: RequestInit = {}): Promise<T> {
-  const cookieStore = cookies();
+const getCookieHeader = () => {
+  return cookies().toString();
+};
 
-  const res = await fetch(`${baseURL}${url}`, {
-    ...options,
+export const checkSession = async () => {
+  return api.get<User>("/auth/session", {
     headers: {
-      Cookie: cookieStore.toString(),
-      "Content-Type": "application/json",
-      ...options.headers,
+      Cookie: getCookieHeader(),
     },
   });
-
-  if (!res.ok) {
-    throw new Error(`Request failed: ${res.status}`);
-  }
-
-  return res.json();
-}
-
-
-export const checkSession = async (): Promise<User> => {
-  return serverFetch<User>("/auth/session");
 };
 
-
-export const getMe = async (): Promise<User> => {
-  return serverFetch<User>("/users/me");
+export const getMe = async () => {
+  return api.get<User>("/users/me", {
+    headers: {
+      Cookie: getCookieHeader(),
+    },
+  });
 };
 
-
-export const fetchNotes = async (params?: NotesQuery): Promise<Note[]> => {
-  const query = params
-    ? "?" +
-      new URLSearchParams(
-        Object.fromEntries(
-          Object.entries(params)
-            .filter(([, v]) => v !== undefined)
-            .map(([k, v]) => [k, String(v)])
-        )
-      ).toString()
-    : "";
-
-  return serverFetch<Note[]>(`/notes${query}`);
+export const fetchNotes = async (params?: NotesQuery) => {
+  return api.get<Note[]>("/notes", {
+    params,
+    headers: {
+      Cookie: getCookieHeader(),
+    },
+  });
 };
 
-export const fetchNoteById = async (id: string): Promise<Note> => {
-  return serverFetch<Note>(`/notes/${id}`);
+export const fetchNoteById = async (id: string) => {
+  return api.get<Note>(`/notes/${id}`, {
+    headers: {
+      Cookie: getCookieHeader(),
+    },
+  });
 };

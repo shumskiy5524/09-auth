@@ -4,10 +4,12 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 
-import { getMe, updateMe } from "@/lib/api/api";
+import { getMe, updateMe } from "@/lib/api/clientApi";
+import { useAuthStore } from "@/lib/store/authStore";
 
 export default function EditProfilePage() {
   const router = useRouter();
+  const setUser = useAuthStore((s) => s.setUser);
 
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
@@ -23,6 +25,8 @@ export default function EditProfilePage() {
         setUsername(user.username);
         setEmail(user.email);
         setAvatar(user.avatar);
+      } catch (err) {
+        console.error(err);
       } finally {
         setLoading(false);
       }
@@ -35,7 +39,9 @@ export default function EditProfilePage() {
     e.preventDefault();
 
     try {
-      await updateMe({ username });
+      const updatedUser = await updateMe({ username });
+
+      setUser(updatedUser); 
       router.push("/profile");
     } catch (err) {
       console.error(err);
