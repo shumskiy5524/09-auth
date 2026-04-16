@@ -1,15 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 
 type Context = {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 };
 
 export async function GET(
   request: NextRequest,
   { params }: Context
 ) {
+  const { id } = await params;
+
   return NextResponse.json({
-    id: params.id,
+    id,
     title: "Note",
     content: "Hello",
     tag: "general",
@@ -21,7 +23,9 @@ export async function DELETE(
   request: NextRequest,
   { params }: Context
 ) {
+  const { id } = await params;
+
   return NextResponse.json({
-    message: `Note ${params.id} deleted`,
+    message: `Note ${id} deleted`,
   });
 }
