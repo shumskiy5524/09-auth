@@ -12,7 +12,7 @@ type NotesQuery = {
 };
 
 async function serverFetch<T>(url: string, options: RequestInit = {}): Promise<T> {
-  const cookieStore = await cookies();
+  const cookieStore = cookies();
 
   const res = await fetch(`${baseURL}${url}`, {
     ...options,
@@ -30,8 +30,6 @@ async function serverFetch<T>(url: string, options: RequestInit = {}): Promise<T
   return res.json();
 }
 
-
-
 export async function checkSession(): Promise<User> {
   return serverFetch<User>("/auth/session");
 }
@@ -40,15 +38,15 @@ export async function getMe(): Promise<User> {
   return serverFetch<User>("/users/me");
 }
 
-
-
 export async function fetchNotes(params?: NotesQuery): Promise<Note[]> {
   const query = params
-    ? "?" + new URLSearchParams(
-        Object.entries(params).reduce((acc, [k, v]) => {
-          if (v !== undefined) acc[k] = String(v);
-          return acc;
-        }, {} as Record<string, string>)
+    ? "?" +
+      new URLSearchParams(
+        Object.fromEntries(
+          Object.entries(params)
+            .filter(([, v]) => v !== undefined)
+            .map(([k, v]) => [k, String(v)])
+        )
       ).toString()
     : "";
 

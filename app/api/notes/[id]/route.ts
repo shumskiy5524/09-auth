@@ -1,27 +1,33 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
-type Props = {
-  params: { id: string };
+type Context = {
+  params: {
+    id: string;
+  };
 };
 
 export async function GET(
-  request: Request,
-  { params }: Props
+  request: NextRequest,
+  { params }: Context
 ) {
+  const { id } = params;
+
   return NextResponse.json({
-    id: params.id,
+    id,
     title: "Note",
     content: "Hello",
-    tag: "todo",
+    tag: "general",
     createdAt: new Date().toISOString(),
   });
 }
 
 export async function DELETE(
-  request: Request,
-  { params }: Props
+  request: NextRequest,
+  { params }: Context
 ) {
+  const { id } = params;
+
   return NextResponse.json({
-    message: `Note ${params.id} deleted`,
+    message: `Note ${id} deleted`,
   });
 }
