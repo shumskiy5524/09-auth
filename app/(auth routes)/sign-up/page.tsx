@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { register } from "@/lib/api/clientApi";
+import { register } from "@/lib/api/api";
 import { useAuthStore } from "@/lib/store/authStore";
 import css from "../auth.module.css";
 

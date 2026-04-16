@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 
-import { getMe, updateMe } from "@/lib/api/clientApi";
+import { getMe, updateMe } from "@/lib/api/api";
 
 export default function EditProfilePage() {
   const router = useRouter();
