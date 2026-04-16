@@ -31,7 +31,7 @@ export default async function Page({ params }: Props) {
     tag: tag === "all" ? "" : tag,
   });
 
-  const notes = res.data; 
+ const notes = res;
   return (
     <div>
       <h1>Notes filtered by: {tag}</h1>
