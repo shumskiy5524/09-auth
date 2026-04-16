@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { getMe } from "@/lib/api/serverApi";
-import css from "./page.module.css";
+import css from "../../page.module.css";
 import Image from "next/image";
 
 export const metadata: Metadata = {
