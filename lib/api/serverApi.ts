@@ -30,15 +30,18 @@ async function serverFetch<T>(url: string, options: RequestInit = {}): Promise<T
   return res.json();
 }
 
-export async function checkSession(): Promise<User> {
+
+export const checkSession = async (): Promise<User> => {
   return serverFetch<User>("/auth/session");
-}
+};
 
-export async function getMe(): Promise<User> {
+
+export const getMe = async (): Promise<User> => {
   return serverFetch<User>("/users/me");
-}
+};
 
-export async function fetchNotes(params?: NotesQuery): Promise<Note[]> {
+
+export const fetchNotes = async (params?: NotesQuery): Promise<Note[]> => {
   const query = params
     ? "?" +
       new URLSearchParams(
@@ -51,8 +54,8 @@ export async function fetchNotes(params?: NotesQuery): Promise<Note[]> {
     : "";
 
   return serverFetch<Note[]>(`/notes${query}`);
-}
+};
 
-export async function fetchNoteById(id: string): Promise<Note> {
+export const fetchNoteById = async (id: string): Promise<Note> => {
   return serverFetch<Note>(`/notes/${id}`);
-}
+};
