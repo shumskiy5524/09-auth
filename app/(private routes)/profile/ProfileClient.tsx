@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { getMe } from "@/lib/api/api";
+import { getMe } from "@/lib/api/clientApi";
 
 export default function ProfileClient() {
   const [user, setUser] = useState<null | {
