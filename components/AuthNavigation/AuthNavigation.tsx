@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useAuthStore } from "@/lib/store/authStore";
-import { logout } from "@/lib/api/api";
+import { logout } from "@/lib/api/clientApi";
 import { useRouter } from "next/navigation";
 
 export default function AuthNavigation() {
