@@ -3,7 +3,7 @@
 import React, { useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
-import { fetchNoteById } from "@/lib/api/api";
+import { fetchNoteById } from "../../lib/api/clientApi";
 
 interface Note {
   id: string;
