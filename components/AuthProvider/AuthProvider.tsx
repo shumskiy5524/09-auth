@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useAuthStore } from "@/lib/store/authStore";
-import { checkSession } from "@/lib/api/clientApi";
+import { checkSession } from "@/lib/api/api";
 
 export default function AuthProvider({
   children,
