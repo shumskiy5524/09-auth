@@ -3,12 +3,12 @@ export const dynamic = 'force-dynamic';
 import { NextResponse } from 'next/server';
 import { api } from '../../api';
 import { cookies } from 'next/headers';
-import { logErrorResponse } from '../../utils/utils';
+import { logErrorResponse } from '../../_utils/utils';
 import { isAxiosError } from 'axios';
 
 export async function GET() {
   try {
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
 
     const res = await api.get('/users/me', {
       headers: {
@@ -23,7 +23,7 @@ export async function GET() {
 
       return NextResponse.json(
         { error: error.message, response: error.response?.data },
-        { status: error.response?.status || 500 }
+        { status: error.status }
       );
     }
 
@@ -38,7 +38,7 @@ export async function GET() {
 
 export async function PATCH(request: Request) {
   try {
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     const body = await request.json();
 
     const res = await api.patch('/users/me', body, {
@@ -54,7 +54,7 @@ export async function PATCH(request: Request) {
 
       return NextResponse.json(
         { error: error.message, response: error.response?.data },
-        { status: error.response?.status || 500 }
+        { status: error.status }
       );
     }
 

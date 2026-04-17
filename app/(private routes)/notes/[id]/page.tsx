@@ -4,9 +4,9 @@ import { useQuery } from "@tanstack/react-query";
 import type { Note } from "@/types/note";
 import { fetchNoteById } from "@/lib/api/clientApi";
 
-interface Props {
+type Props = {
   id: string;
-}
+};
 
 export default function NoteClient({ id }: Props) {
   const { data, isLoading, isError } = useQuery<Note>({
