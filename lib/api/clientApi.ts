@@ -2,7 +2,6 @@ import { api } from "./api";
 import type { Note, NewNote } from "@/types/note";
 import type { User } from "@/types/user";
 
-
 export const register = async (payload: { email: string; password: string }) => {
   const { data } = await api.post<User>("/auth/register", payload);
   return data;
@@ -22,7 +21,6 @@ export const checkSession = async () => {
   return data;
 };
 
-
 export const getMe = async () => {
   const { data } = await api.get<User>("/users/me");
   return data;
@@ -33,7 +31,6 @@ export const updateMe = async (payload: { username?: string }) => {
   return data;
 };
 
-
 export const fetchNotes = async (params?: {
   search?: string;
   page?: number;
@@ -41,7 +38,12 @@ export const fetchNotes = async (params?: {
   tag?: string;
 }) => {
   const { data } = await api.get<Note[]>("/notes", { params });
-  return data;
+
+  
+  return {
+    notes: data,
+    totalPages: 1,
+  };
 };
 
 export const fetchNoteById = async (id: string) => {

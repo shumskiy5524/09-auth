@@ -1,26 +1,59 @@
 "use client";
 
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import type { Note } from "@/types/note";
-import { fetchNoteById } from "@/lib/api/clientApi";
+import { useDebounce } from "use-debounce";
+import { useParams } from "next/navigation";
+import Link from "next/link";
+import { fetchNotes } from "@/lib/api/clientApi";
+import SearchBox from "@/components/SearchBox/SearchBox";
+import NoteList from "@/components/NoteList/NoteList";
+import Pagination from "@/components/Pagination/Pagination";
 
-type Props = {
-  id: string;
-};
+export default function Notes() {
+  const params = useParams();
+  const tagFromUrl = Array.isArray(params?.slug) ? params.slug[0] : "all";
 
-export default function NoteClient({ id }: Props) {
-  const { data, isLoading, isError } = useQuery<Note>({
-    queryKey: ["note", id],
-    queryFn: () => fetchNoteById(id),
+  const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
+  const [debouncedSearch] = useDebounce(search, 500);
+
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["notes", debouncedSearch, page, tagFromUrl],
+    queryFn: () =>
+      fetchNotes({
+        search: debouncedSearch,
+        page,
+        perPage: 12,
+        tag: tagFromUrl === "all" ? "" : tagFromUrl,
+      }),
   });
 
+  const notes = data?.notes ?? [];
+  const totalPages = data?.totalPages ?? 0;
+
   if (isLoading) return <p>Loading...</p>;
-  if (isError || !data) return <p>Error</p>;
+  if (isError) return <p>Error loading notes</p>;
 
   return (
     <div>
-      <h1>{data.title}</h1>
-      <p>{data.content}</p>
+      <SearchBox value={search} onChange={(val) => { setSearch(val); setPage(1); }} />
+      <Link href="/notes/action/create">Create note</Link>
+
+      {notes.length > 0 ? (
+        <>
+          <NoteList notes={notes} />
+          {totalPages > 1 && (
+            <Pagination
+              currentPage={page}
+              totalPages={totalPages} 
+              onPageChange={(newPage) => setPage(newPage)}
+            />
+          )}
+        </>
+      ) : (
+        <p>No notes found</p>
+      )}
     </div>
   );
 }
