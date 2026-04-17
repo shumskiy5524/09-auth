@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -23,7 +24,6 @@ export default function Notes() {
   const [page, setPage] = useState(1);
   const [tag] = useState(tagFromUrl || "all");
 
- 
   const [debouncedSearch] = useDebounce(search, 500);
 
   const { data, isLoading, isError } = useQuery<Note[]>({
@@ -39,37 +39,38 @@ export default function Notes() {
 
   const notes = data ?? [];
 
-  
   const handleSearchChange = (value: string) => {
     setSearch(value);
     setPage(1);
   };
 
-  
   const handlePageChange = (newPage: number) => {
     setPage(newPage);
   };
+
+ 
+  const totalPages = notes.length === 12 ? page + 1 : page;
 
   if (isLoading) return <p>Loading...</p>;
   if (isError) return <p>Error loading notes</p>;
 
   return (
     <div>
-      
       <SearchBox value={search} onChange={handleSearchChange} />
 
-      
       <Link href="/notes/action/create">Create note</Link>
 
-    
-      <NoteList notes={notes} />
+      {notes.length > 0 && (
+        <>
+          <NoteList notes={notes} />
 
-      
-      <Pagination
-  currentPage={page}
-  totalPages={10}
-  onPageChange={handlePageChange}
-/>
+          <Pagination
+            currentPage={page}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+          />
+        </>
+      )}
     </div>
   );
 }
