@@ -12,7 +12,7 @@ import SearchBox from "@/components/SearchBox/SearchBox";
 import NoteList from "@/components/NoteList/NoteList";
 import Pagination from "@/components/Pagination/Pagination";
 
-export default function Notes() {
+export default function NotesClient() {
   const params = useParams();
   const tagFromUrl = Array.isArray(params?.slug) ? params.slug[0] : "all";
 
@@ -41,14 +41,13 @@ export default function Notes() {
   if (isLoading) return <p>Loading...</p>;
   if (isError) return <p>Error loading notes</p>;
 
-  const hasNotes = notes.length > 0;
-
   return (
     <div>
       <SearchBox value={search} onChange={handleSearchChange} />
+
       <Link href="/notes/action/create">Create note</Link>
 
-      {hasNotes ? (
+      {notes.length > 0 ? (
         <>
           <NoteList notes={notes} />
 
