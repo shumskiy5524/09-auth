@@ -2,6 +2,7 @@ import { api } from "./api";
 import type { Note, NewNote } from "@/types/note";
 import type { User } from "@/types/user";
 
+
 export const register = async (payload: { email: string; password: string }) => {
   const { data } = await api.post<User>("/auth/register", payload);
   return data;
@@ -31,6 +32,7 @@ export const updateMe = async (payload: { username?: string }) => {
   return data;
 };
 
+
 export const fetchNotes = async (params?: {
   search?: string;
   page?: number;
@@ -38,12 +40,7 @@ export const fetchNotes = async (params?: {
   tag?: string;
 }) => {
   const { data } = await api.get<Note[]>("/notes", { params });
-
-  
-  return {
-    notes: data,
-    totalPages: 1,
-  };
+  return data; 
 };
 
 export const fetchNoteById = async (id: string) => {
@@ -52,11 +49,11 @@ export const fetchNoteById = async (id: string) => {
 };
 
 export const createNote = async (payload: NewNote) => {
-  const { data: res } = await api.post<Note>("/notes", payload);
-  return res;
+  const { data } = await api.post<Note>("/notes", payload);
+  return data;
 };
 
 export const deleteNote = async (id: string) => {
-  const { data: res } = await api.delete<Note>(`/notes/${id}`);
-  return res;
+  const { data } = await api.delete<Note>(`/notes/${id}`);
+  return data;
 };

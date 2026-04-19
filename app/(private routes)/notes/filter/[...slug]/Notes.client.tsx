@@ -6,17 +6,11 @@ import { useDebounce } from "use-debounce";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { fetchNotes } from "@/lib/api/clientApi";
-import type { Note } from "@/types/note"; 
+import type { Note } from "@/types/note";
 
 import SearchBox from "@/components/SearchBox/SearchBox";
 import NoteList from "@/components/NoteList/NoteList";
 import Pagination from "@/components/Pagination/Pagination";
-
-
-interface NotesResponse {
-  notes: Note[];
-  totalPages: number;
-}
 
 export default function Notes() {
   const params = useParams();
@@ -26,24 +20,22 @@ export default function Notes() {
   const [page, setPage] = useState(1);
   const [debouncedSearch] = useDebounce(search, 500);
 
- 
-  const { data, isLoading, isError } = useQuery<NotesResponse>({
+  const { data, isLoading, isError } = useQuery<Note[]>({
     queryKey: ["notes", debouncedSearch, page, tagFromUrl],
     queryFn: () =>
       fetchNotes({
         search: debouncedSearch,
         page,
         perPage: 12,
-        tag: tagFromUrl === "all" ? "" : tagFromUrl,
+        tag: tagFromUrl === "all" ? undefined : tagFromUrl,
       }),
   });
 
-  const notes = data?.notes ?? [];
-  const totalPages = data?.totalPages ?? 0;
+  const notes = data ?? [];
 
   const handleSearchChange = (value: string) => {
     setSearch(value);
-    setPage(1); 
+    setPage(1);
   };
 
   if (isLoading) return <p>Loading...</p>;
@@ -59,13 +51,12 @@ export default function Notes() {
       {hasNotes ? (
         <>
           <NoteList notes={notes} />
-          {totalPages > 1 && (
-            <Pagination
-              currentPage={page}
-              totalPages={totalPages} 
-              onPageChange={(newPage) => setPage(newPage)}
-            />
-          )}
+
+          <Pagination
+            currentPage={page}
+            totalPages={1}
+            onPageChange={(newPage) => setPage(newPage)}
+          />
         </>
       ) : (
         <p>No notes found</p>
