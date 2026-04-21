@@ -20,18 +20,23 @@ export default function NotesClient() {
   const [page, setPage] = useState(1);
   const [debouncedSearch] = useDebounce(search, 500);
 
+  const PER_PAGE = 12;
+
   const { data, isLoading, isError } = useQuery<Note[]>({
     queryKey: ["notes", debouncedSearch, page, tagFromUrl],
     queryFn: () =>
       fetchNotes({
         search: debouncedSearch,
         page,
-        perPage: 12,
-        tag: tagFromUrl === "all" ? undefined : tagFromUrl,
+        perPage: PER_PAGE,
+        tag: tagFromUrl === "all" ? "" : tagFromUrl, 
       }),
   });
 
   const notes = data ?? [];
+
+ 
+  const totalPages = notes.length < PER_PAGE ? page : page + 1;
 
   const handleSearchChange = (value: string) => {
     setSearch(value);
@@ -53,7 +58,7 @@ export default function NotesClient() {
 
           <Pagination
             currentPage={page}
-            totalPages={1}
+            totalPages={totalPages} 
             onPageChange={(newPage) => setPage(newPage)}
           />
         </>
