@@ -1,32 +1,78 @@
 "use client";
 
+import { useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
-import { fetchNoteById } from "@/lib/api/clientApi"; 
-import type { Note } from "@/types/note";
+import { fetchNotes } from "@/lib/api/clientApi"; 
+import SearchBox from "@/components/SearchBox/SearchBox"; 
+import Pagination from "@/components/Pagination/Pagination";
+import NoteList from "@/components/NoteList/NoteList";
 
-interface NoteDetailsProps {
-  id: string;
+interface NotesClientProps {
+  slug: string[];
 }
 
-export default function NoteDetails({ id }: NoteDetailsProps) {
-  const { data, isLoading, isError } = useQuery<Note>({
-    queryKey: ["note", id],
-    queryFn: () => fetchNoteById(id),
+export default function NotesClient({ slug }: NotesClientProps) {
+  const router = useRouter();
+
+
+  const pageIndex = slug.indexOf("page");
+  const currentPage = pageIndex !== -1 ? parseInt(slug[pageIndex + 1]) : 1;
+  
+  const initialSearch = slug.includes("search") ? slug[slug.indexOf("search") + 1] : "";
+  const [search, setSearch] = useState(initialSearch);
+
+  
+  const tagFilter = slug.includes("tag") ? slug[slug.indexOf("tag") + 1] : "";
+
+  
+  const handlePageChange = (newPage: number) => {
+    router.push(`/notes/filter/all/page/${newPage}`);
+  };
+
+ 
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["notes", { page: currentPage, search, tag: tagFilter }],
+    queryFn: () => fetchNotes({ page: currentPage, search, tag: tagFilter }),
   });
 
-  if (isLoading) {
-    return <div>Loading note...</div>;
-  }
-
-  if (isError || !data) {
-    return <div>Error loading note.</div>;
-  }
+  if (isLoading) return <div>Loading notes list...</div>;
+  if (isError) return <div>Error loading notes.</div>;
 
   return (
-    <div>
-      <h1>{data.title}</h1>
-      <p>{data.content}</p>
-      <p>{data.tag}</p>
+    <div className="container" style={{ padding: '20px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+        <h1>My Notes</h1>
+        
+       
+        <Link 
+          href="/notes/action/create" 
+          style={{ 
+            padding: '10px 20px', 
+            background: '#0070f3', 
+            color: 'white', 
+            borderRadius: '6px', 
+            textDecoration: 'none',
+            fontWeight: 'bold' 
+          }}
+        >
+          + Create New Note
+        </Link>
+      </div>
+
+      
+      <SearchBox value={search} onChange={setSearch} />
+
+    
+      <NoteList notes={data || []} />
+
+      
+      <Pagination 
+        currentPage={currentPage} 
+        totalPages={1} 
+        onPageChange={handlePageChange} 
+      />
     </div>
   );
 }

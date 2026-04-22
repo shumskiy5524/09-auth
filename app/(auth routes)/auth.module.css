@@ -1,5 +1,73 @@
-.container {
+.mainContent {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 80vh;
+}
+
+.formCard {
+    background: white;
+    padding: 2.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+}
+
+.formTitle {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    color: #333;
+    font-size: 24px;
+}
+
+.form {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 1rem;
+}
+
+.formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.input {
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 16px;
+}
+
+.submitButton {
+    width: 100%;
+    padding: 0.75rem;
+    background: #0070f3;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    margin-top: 1rem;
+}
+
+.submitButton:hover {
+    background: #0051bb;
+}
+
+.footerText {
+    text-align: center;
+    margin-top: 1.5rem;
+    font-size: 14px;
+    color: #666;
+}
+
+.error {
+    color: #d32f2f;
+    background: #ffebee;
+    padding: 10px;
+    border-radius: 4px;
+    font-size: 14px;
+    text-align: center;
 }
