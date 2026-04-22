@@ -1,15 +1,21 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { cookies } from 'next/headers';
 import { checkSession } from '@/lib/api/serverApi';
 
 export default async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  const isAuthPage = pathname.startsWith('/sign-in') || pathname.startsWith('/sign-up');
-  const isPrivatePage = pathname.startsWith('/profile') || pathname.startsWith('/notes');
+  const isAuthPage =
+    pathname.startsWith('/sign-in') || pathname.startsWith('/sign-up');
 
-  const accessToken = request.cookies.get('accessToken')?.value;
-  const refreshToken = request.cookies.get('refreshToken')?.value;
+  const isPrivatePage =
+    pathname.startsWith('/profile') || pathname.startsWith('/notes');
+
+  const cookieStore = await cookies();
+
+  const accessToken = cookieStore.get('accessToken')?.value;
+  const refreshToken = cookieStore.get('refreshToken')?.value;
 
   let isAuthenticated = !!accessToken;
   let newCookies: string[] = [];
@@ -17,9 +23,12 @@ export default async function proxy(request: NextRequest) {
   if (!accessToken && refreshToken) {
     try {
       const sessionResponse = await checkSession();
+
       if (sessionResponse) {
         isAuthenticated = true;
+
         const setCookieHeader = sessionResponse.headers?.['set-cookie'];
+
         if (setCookieHeader) {
           newCookies = Array.isArray(setCookieHeader)
             ? setCookieHeader

@@ -1,70 +1,32 @@
 "use client";
 
-import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useDebounce } from "use-debounce";
-import { useParams } from "next/navigation";
-import Link from "next/link";
-import { fetchNotes } from "@/lib/api/clientApi";
+import { fetchNoteById } from "@/lib/api/clientApi"; 
 import type { Note } from "@/types/note";
 
-import SearchBox from "@/components/SearchBox/SearchBox";
-import NoteList from "@/components/NoteList/NoteList";
-import Pagination from "@/components/Pagination/Pagination";
+interface NoteDetailsProps {
+  id: string;
+}
 
-export default function NotesClient() {
-  const params = useParams();
-  const tagFromUrl = Array.isArray(params?.slug) ? params.slug[0] : "all";
-
-  const [search, setSearch] = useState("");
-  const [page, setPage] = useState(1);
-  const [debouncedSearch] = useDebounce(search, 500);
-
-  const PER_PAGE = 12;
-
-  const { data, isLoading, isError } = useQuery<Note[]>({
-    queryKey: ["notes", debouncedSearch, page, tagFromUrl],
-    queryFn: () =>
-      fetchNotes({
-        search: debouncedSearch,
-        page,
-        perPage: PER_PAGE,
-        tag: tagFromUrl === "all" ? "" : tagFromUrl, 
-      }),
+export default function NoteDetails({ id }: NoteDetailsProps) {
+  const { data, isLoading, isError } = useQuery<Note>({
+    queryKey: ["note", id],
+    queryFn: () => fetchNoteById(id),
   });
 
-  const notes = data ?? [];
+  if (isLoading) {
+    return <div>Loading note...</div>;
+  }
 
- 
-  const totalPages = notes.length < PER_PAGE ? page : page + 1;
-
-  const handleSearchChange = (value: string) => {
-    setSearch(value);
-    setPage(1);
-  };
-
-  if (isLoading) return <p>Loading...</p>;
-  if (isError) return <p>Error loading notes</p>;
+  if (isError || !data) {
+    return <div>Error loading note.</div>;
+  }
 
   return (
     <div>
-      <SearchBox value={search} onChange={handleSearchChange} />
-
-      <Link href="/notes/action/create">Create note</Link>
-
-      {notes.length > 0 ? (
-        <>
-          <NoteList notes={notes} />
-
-          <Pagination
-            currentPage={page}
-            totalPages={totalPages} 
-            onPageChange={(newPage) => setPage(newPage)}
-          />
-        </>
-      ) : (
-        <p>No notes found</p>
-      )}
+      <h1>{data.title}</h1>
+      <p>{data.content}</p>
+      <p>{data.tag}</p>
     </div>
   );
 }
