@@ -38,9 +38,18 @@ export const fetchNotes = async (params?: {
   page?: number;
   perPage?: number;
   tag?: string;
-}) => {
+}): Promise<{ notes: Note[]; totalPages: number }> => {
   const { data } = await api.get<Note[]>("/notes", { params });
-  return data; 
+
+  const PER_PAGE = params?.perPage || 12;
+  const currentPage = params?.page || 1;
+  const totalPages =
+    data.length < PER_PAGE ? currentPage : currentPage + 1;
+
+  return {
+    notes: data,
+    totalPages,
+  };
 };
 
 export const fetchNoteById = async (id: string) => {
