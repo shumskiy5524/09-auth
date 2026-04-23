@@ -22,6 +22,7 @@ export const checkSession = async () => {
   return data;
 };
 
+
 export const getMe = async () => {
   const { data } = await api.get<User>("/users/me");
   return data;
@@ -32,23 +33,24 @@ export const updateMe = async (payload: { username?: string }) => {
   return data;
 };
 
-
 export const fetchNotes = async (params?: {
   search?: string;
   page?: number;
   perPage?: number;
   tag?: string;
 }): Promise<{ notes: Note[]; totalPages: number }> => {
-  const { data } = await api.get<Note[]>("/notes", { params });
+ 
+  const { data, headers } = await api.get<Note[]>("/notes", { params });
 
   const PER_PAGE = params?.perPage || 12;
   const currentPage = params?.page || 1;
-
-  const totalPages =
-    data.length < PER_PAGE ? currentPage : currentPage + 1;
+  
+  const serverTotalPages = headers["x-total-pages"] ? parseInt(headers["x-total-pages"]) : null;
+  
+  const totalPages = serverTotalPages ?? (data.length < PER_PAGE ? currentPage : currentPage + 1);
 
   return {
-    notes: data,
+    notes: data, 
     totalPages,
   };
 };
