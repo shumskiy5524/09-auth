@@ -43,6 +43,7 @@ export const fetchNotes = async (params?: {
 
   const PER_PAGE = params?.perPage || 12;
   const currentPage = params?.page || 1;
+
   const totalPages =
     data.length < PER_PAGE ? currentPage : currentPage + 1;
 

@@ -8,6 +8,7 @@ import { fetchNotes } from "@/lib/api/clientApi";
 import SearchBox from "@/components/SearchBox/SearchBox";
 import Pagination from "@/components/Pagination/Pagination";
 import NoteList from "@/components/NoteList/NoteList";
+import type { Note } from "@/types/note";
 
 interface NotesClientProps {
   slug: string[];
@@ -15,7 +16,6 @@ interface NotesClientProps {
 
 export default function NotesClient({ slug }: NotesClientProps) {
   const router = useRouter();
-
 
   const pageIndex = slug.indexOf("page");
   const currentPage =
@@ -29,12 +29,12 @@ export default function NotesClient({ slug }: NotesClientProps) {
     ? slug[slug.indexOf("tag") + 1]
     : "";
 
-  
+
   const [search, setSearch] = useState(initialSearch);
   const [debouncedSearch, setDebouncedSearch] =
     useState(initialSearch);
 
-  
+
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearch(search);
@@ -50,8 +50,11 @@ export default function NotesClient({ slug }: NotesClientProps) {
     );
   }, [debouncedSearch, router]);
 
-  
-  const { data, isLoading, isError } = useQuery({
+ 
+  const { data, isLoading, isError } = useQuery<{
+    notes: Note[];
+    totalPages: number;
+  }>({
     queryKey: [
       "notes",
       { page: currentPage, search: debouncedSearch, tag: tagFilter },
@@ -61,11 +64,11 @@ export default function NotesClient({ slug }: NotesClientProps) {
         page: currentPage,
         search: debouncedSearch,
         tag: tagFilter,
-        perPage: 12, 
+        perPage: 12,
       }),
   });
 
- 
+  
   const handlePageChange = (newPage: number) => {
     router.push(
       `/notes/filter/all/search/${debouncedSearch}/page/${newPage}`
@@ -108,12 +111,10 @@ export default function NotesClient({ slug }: NotesClientProps) {
 
       <SearchBox value={search} onChange={setSearch} />
 
-      
       {notes.length > 0 ? (
         <>
           <NoteList notes={notes} />
 
-        
           {totalPages > 1 && (
             <Pagination
               currentPage={currentPage}
