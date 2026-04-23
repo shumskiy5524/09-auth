@@ -14,11 +14,17 @@ interface NotesClientProps {
   slug: string[];
 }
 
+
+interface FetchNotesResponse {
+  notes: Note[];
+  totalPages: number;
+}
+
 export default function NotesClient({ slug }: NotesClientProps) {
   const router = useRouter();
   const isFirstRender = useRef(true);
 
- 
+  
   const pageIndex = slug.indexOf("page");
   const currentPage = pageIndex !== -1 ? parseInt(slug[pageIndex + 1]) : 1;
 
@@ -33,7 +39,7 @@ export default function NotesClient({ slug }: NotesClientProps) {
   const [search, setSearch] = useState(initialSearch);
   const [debouncedSearch, setDebouncedSearch] = useState(initialSearch);
 
-
+ 
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearch(search);
@@ -41,32 +47,31 @@ export default function NotesClient({ slug }: NotesClientProps) {
     return () => clearTimeout(timer);
   }, [search]);
 
+  
   useEffect(() => {
- 
     if (isFirstRender.current) {
       isFirstRender.current = false;
       return;
     }
 
-    
     if (debouncedSearch !== initialSearch) {
       router.push(`/notes/filter/all/search/${debouncedSearch}/page/1`);
     }
   }, [debouncedSearch, router, initialSearch]);
 
-  
-  const { data, isLoading, isError } = useQuery<{
-    notes: Note[];
-    totalPages: number;
-  }>({
+
+  const { data, isLoading, isError } = useQuery<FetchNotesResponse, Error>({
     queryKey: ["notes", { page: currentPage, search: debouncedSearch, tag: tagFilter }],
-    queryFn: () =>
-      fetchNotes({
+    queryFn: async () => {
+      
+      const result = await fetchNotes({
         page: currentPage,
         search: debouncedSearch,
         tag: tagFilter,
         perPage: 12,
-      }),
+      });
+      return result;
+    },
   });
 
   const handlePageChange = (newPage: number) => {
@@ -77,6 +82,7 @@ export default function NotesClient({ slug }: NotesClientProps) {
   if (isLoading) return <div>Loading notes list...</div>;
   if (isError) return <div>Error loading notes.</div>;
 
+ 
   const notes = data?.notes || [];
   const totalPages = data?.totalPages || 1;
 
@@ -104,7 +110,8 @@ export default function NotesClient({ slug }: NotesClientProps) {
       {notes.length > 0 ? (
         <>
           <NoteList notes={notes} />
-         
+          
+          
           {totalPages > 1 && (
             <Pagination
               currentPage={currentPage}
